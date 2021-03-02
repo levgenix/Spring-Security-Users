@@ -22,35 +22,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.formLogin()
-                // указываем страницу с формой логина
-                .loginPage("/login")
-                //указываем логику обработки при логине
-                .successHandler(new LoginSuccessHandler())
-                // указываем action с формы логина
-                .loginProcessingUrl("/login")
-                // Указываем параметры логина и пароля с формы логина
-                .usernameParameter("j_username")
+                .loginPage("/login") // указываем страницу с формой логина
+                .successHandler(new LoginSuccessHandler()) //указываем логику обработки при логине
+                .loginProcessingUrl("/login") // указываем action с формы логина
+                .usernameParameter("j_username") // Указываем параметры логина и пароля с формы логина
                 .passwordParameter("j_password")
-                // даем доступ к форме логина всем
-                .permitAll();
+                .permitAll(); // даем доступ к форме логина всем
 
         http.logout()
-                // разрешаем делать логаут всем
-                .permitAll()
-                // указываем URL логаута
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                // указываем URL при удачном логауте
-                .logoutSuccessUrl("/login?logout")
-                //выклчаем кроссдоменную секьюрность (на этапе обучения неважна)
-                .and().csrf().disable();
+                .permitAll() // разрешаем делать логаут всем
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout")) // указываем URL логаута
+                .logoutSuccessUrl("/login?logout") // указываем URL при удачном логауте
+                .invalidateHttpSession(true) // сделать невалидной текущую сессию
+                .and().csrf().disable(); //выклчаем кроссдоменную секьюрность (на этапе обучения неважна)
+
+        http.csrf().configure(http);
 
         http
-                // делаем страницу регистрации недоступной для авторизированных пользователей
-                .authorizeRequests()
-                //страницы аутентификаци доступна всем
-                .antMatchers("/login").anonymous()
-                // защищенные URL
-                .antMatchers("/hello").access("hasAnyRole('ADMIN')").anyRequest().authenticated();
+                .authorizeRequests() // делаем страницу регистрации недоступной для авторизированных пользователей
+                .antMatchers("/login").anonymous() //страницы аутентификаци доступна всем
+                .antMatchers("/hello").access("hasAnyRole('ADMIN')").anyRequest().authenticated(); // защищенные URL
     }
 
     @Bean
