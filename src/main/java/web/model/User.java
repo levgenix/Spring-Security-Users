@@ -1,15 +1,18 @@
 package web.model;
 
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) long id;
 
@@ -21,18 +24,29 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(unique = true)
+    @NotEmpty(message = "Email should not be empty")
     @Email(message = "Email should be valid")
     private String email;
 
     @NotEmpty(message = "Password should not be empty")
-    @Min(value = 4, message = "Password should be min 4 characters")
     private String password;
+
+    private boolean enabled;
+
+    //@Transient //TODO
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    private Set<Role> roles;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_on")
+    private Date createdOn;
 
     public User() {
 
     }
 
-    public User(String firstName, String lastName, String email, String password) {
+    public User(String firstName, String lastName, String email, String password) { // TODO
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -79,9 +93,71 @@ public class User {
         this.password = password;
     }
 
+    public String getFullName() {
+        return getFirstName() + " " + getLastName();
+    }
+
+    public boolean hasRole(int roleId) {
+        if (null == roles|| 0 == roles.size()) {
+            return false;
+        }
+        Optional<Role> findRole = roles.stream().filter(role -> roleId == role.getId()).findFirst();
+        return findRole.isPresent();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public Date getCreatedOn() { // TODO
+        return createdOn;
+    }
+
+    public void setCreatedOn(Date createdOn) { // TODO
+        this.createdOn = createdOn;
+    }
+
     @Override
     public String toString() {
-        return String.format("User [id = %d; firstName = %s; lastName = %s; email = %s; password = %s]",
-                id, firstName, lastName, email, password);
+        return String.format("User [id = %d; firstName = %s; lastName = %s; email = %s; password = %s; enabled = %s; roles = (%s)]",
+                id, firstName, lastName, email, password, isEnabled(), Collections.singletonList(roles));
     }
 }

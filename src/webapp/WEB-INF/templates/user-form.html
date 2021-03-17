@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:with="lang=${#locale.language}" th:lang="${lang}">
+
+<head th:replace="layouts/main :: htmlhead"/>
+<body>
+
+<nav th:replace="layouts/main :: navigation" />
+
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <h1 class="mt-5">CRUD App</h1>
+            <p class="lead">Create/ update user</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <form th:method="POST" th:action="@{/admin}" th:object="${user}">
+        <input type="hidden" th:field="*{id}" th:value="*{getId()}">
+        <div class="form-row">
+            <div class="col-md-6 mb-3">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid'" id="name" th:field="*{firstName}" th:value="*{getFirstName()}" placeholder="Enter user name">
+                <div th:if="${#fields.hasErrors('firstName')}" class="invalid-feedback" th:errors="*{firstName}"/>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="last_name">Last name</label>
+                <input type="text" class="form-control" id="last_name" th:field="*{lastName}" th:value="*{getLastName()}" placeholder="Enter last name">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-6 mb-3">
+                <label for="email">Email</label>
+                <input type="text" class="form-control" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'" id="email" th:field="*{email}" th:value="*{getEmail()}" placeholder="Enter email">
+                <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback" th:errors="*{email}"/>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'" id="password" th:field="*{password}" th:value="*{getPassword()}" placeholder="Enter password">
+                <div th:if="${#fields.hasErrors('password')}" class="invalid-feedback" th:errors="*{password}"/>
+            </div>
+        </div>
+        <div class="form-row mb-3">
+            <div class="col-md mb-3">
+                <label for="roles">Roles</label>
+                <div id="roles">
+                    <div class="form-check form-check-inline" th:each="role : ${allRoles}">
+                        <input class="form-check-input" type="checkbox" name="roles" th:checked="${user.hasRole(__${role.id}__)}" th:id="${role.name}" th:value="${role.id}">
+                        <label class="form-check-label" th:for="${role.name}" th:text="${role.name}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-secondary" type="submit" th:text="*{getId()} ? 'Save' : 'Create'"/>
+        <a class="btn btn-light border-dark" href="/admin">Cancel</a>
+    </form>
+</div>
+
+<div th:replace="layouts/main :: footer"></div>
+</body>
+</html>

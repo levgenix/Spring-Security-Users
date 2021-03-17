@@ -1,25 +1,38 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:with="lang=${#locale.language}" th:lang="${lang}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:with="lang=${#locale.language}" th:lang="${lang}">
 
 <head th:replace="layouts/main :: htmlhead"/>
-
 <body>
 
 <nav th:replace="layouts/main :: navigation" />
 
-<div class="container">
-    <div class="row">
-        <div class="col text-center">
-            <h1 class="mt-5">CRUD App</h1>
-            <p class="lead">Практическая задача</p>
-            <ul class="list-unstyled">
-                <li>Spring MVC</li>
-                <li>Hibernate</li>
-            </ul>
+<div class="container pt-4">
+    <div class="row d-flex justify-content-center">
+        <div class="col-auto">
+            <div class="jumbotron">
+                <h1 class="display-4">CRUD App</h1>
+                <p class="lead">CRUD App using Spring MVC, Hibernate, Spring Security, Thymeleaf</p>
+                <hr class="my-4">
+                <th:block sec:authorize="isAuthenticated()">
+                    <p>You Authenticated as <span sec:authentication="name"/></p>
+                    <p><a type="button" th:href="@{/logout}" class="btn btn-secondary bg-secondary text-white">Logout</a></p>
+                </th:block>
+                <th:block sec:authorize="!isAuthenticated()">
+                    <p>Sign in for access</p>
+                    <form th:method="POST" th:action="@{/}" th:object="${user}">
+                        <div class="form-row">
+                            <div class="col-md-6 mb-3">
+                                <input type="text" class="form-control" name="email" th:value="*{email}" placeholder="Email (login)" autofocus="autofocus" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <input type="password" class="form-control" name="password" th:value="*{password}" placeholder="Password" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-secondary">Sign in</button>
+                    </form>
+                </th:block>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col text-center"><a type="button" th:href="@{/users}" class="btn btn-secondary bg-secondary text-white">Get user list</a></div>
     </div>
 </div>
 

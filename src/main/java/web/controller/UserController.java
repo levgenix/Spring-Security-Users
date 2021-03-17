@@ -1,31 +1,21 @@
 package web.controller;
 
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.util.ArrayList;
-import java.util.List;
+import web.model.User;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/user")
 public class UserController {
 
-	@GetMapping("hello")
-	public String printWelcome(ModelMap model) {
-		List<String> messages = new ArrayList<>();
-		messages.add("Hello!");
-		messages.add("I'm Spring MVC-SECURITY application");
-		messages.add("5.3.8 version");
-		model.addAttribute("messages", messages);
-		return "hello";
-	}
+    @GetMapping("")
+    public String showUserInfo(@CurrentSecurityContext(expression = "authentication.principal") User principal,
+                               Model model) {
+        model.addAttribute("user", principal);
 
-	@GetMapping("login")
-	public String loginPage() {
-		return "login";
-	}
-
+        return "user-info";
+    }
 }

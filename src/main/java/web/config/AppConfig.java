@@ -1,13 +1,12 @@
 package web.config;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -18,32 +17,36 @@ import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
 
 @Configuration
-@PropertySource("classpath:db.properties")
+@PropertySource("classpath:hibernate.properties")
 @EnableTransactionManagement
-public class DbConfig {
-    private final Environment env;
+public class AppConfig {
 
-    public DbConfig(Environment env) {
-        this.env = env;
-    }
+    @Value("${hibernate.connection.driver_class}")
+    private String driver;
+
+    @Value("${hibernate.connection.url}")
+    private String url;
 
     @Bean
-    public DataSource dataSource() throws PropertyVetoException {
+    public DataSource dataSource() {
         ComboPooledDataSource dataSource = new ComboPooledDataSource();
-        dataSource.setDriverClass(env.getProperty("db.driver"));
-        dataSource.setJdbcUrl(env.getProperty("db.url"));
-        dataSource.setUser(env.getProperty("db.username"));
-        dataSource.setPassword(env.getProperty("db.password"));
+        try {
+            dataSource.setDriverClass(driver);
+            dataSource.setJdbcUrl(url);
+        } catch (PropertyVetoException e) {
+            e.printStackTrace();
+        }
+
         return dataSource;
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws PropertyVetoException {
-        JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan(new String[] {"web.model"});
-        em.setJpaVendorAdapter(vendorAdapter);
+        em.setPackagesToScan("web.model");
+        em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        em.setPersistenceUnitName("emFactory");
 
         return em;
     }
@@ -52,9 +55,11 @@ public class DbConfig {
     public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);
+
         return transactionManager;
     }
 
+    // TODO
     @Bean
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();

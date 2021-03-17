@@ -1,0 +1,12 @@
+TODO
+ApplicationInitializer.onStartup - проверка на кириллицу в форме
++ Reformat naming all methods
+unique users
++ Make RoleRepository
+Autoload test data
+code style
+Перехват исключений при авторизации. enabled. #{errors}?
+Переход по несекьюрным линкам
+EnableAspectJAutoProxy
+Validate form
+BCrypro password
