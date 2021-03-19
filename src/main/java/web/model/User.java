@@ -37,15 +37,11 @@ public class User implements UserDetails {
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_on") // todo
-    private Date createdOn;
-
     public User() {
 
     }
 
-    public User(String firstName, String lastName, String email, String password) { // TODO
+    public User(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -152,14 +148,6 @@ public class User implements UserDetails {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
-    }
-
-    public Date getCreatedOn() { // TODO
-        return createdOn;
-    }
-
-    public void setCreatedOn(Date createdOn) { // TODO
-        this.createdOn = createdOn;
     }
 
     @Override

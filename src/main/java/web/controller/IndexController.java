@@ -26,10 +26,4 @@ public class IndexController {
 		// TODO: как отловить неудачный логин "/?error" @PostMapping
 		return "index";
 	}
-
-	// TODO
-//	@GetMapping("login")
-//	public String loginPage() {
-//		return "login";
-//	}
 }

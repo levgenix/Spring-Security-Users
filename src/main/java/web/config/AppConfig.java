@@ -57,10 +57,4 @@ public class AppConfig {
 
         return transactionManager;
     }
-
-    // TODO
-/*    @Bean
-    public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
-        return new PersistenceExceptionTranslationPostProcessor();
-    }*/
 }

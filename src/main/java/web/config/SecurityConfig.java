@@ -48,21 +48,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers("/login").anonymous() //страницы аутентификаци доступна всем
                 .antMatchers("/admin/**  ").hasRole("ADMIN") // TODO проверить
                 .antMatchers("/user/**  ").hasAnyRole("ADMIN", "USER")
+                .anyRequest().authenticated(); // защищенные URL
                 //.antMatchers("/hello").access("hasAnyRole('ADMIN')").anyRequest().authenticated(); // защищенные URL
-                .anyRequest()
-                .authenticated();
                 //.and()
                 // 403 error https://www.codeflow.site/ru/article/spring-security-custom-access-denied-page
                 //.exceptionHandling().accessDeniedPage("/accessdenied"); // todo
 
         http.formLogin()
                 .loginPage("/") // указываем страницу с формой логина
-                .permitAll()
+                .permitAll()  // даем доступ к форме логина всем
                 .successHandler(authenticationSuccessHandler) //указываем логику обработки при удачном логине
                 .failureHandler(authenticationFailureHandler)
                 .usernameParameter("email") // Указываем параметры логина и пароля с формы логина
                 .passwordParameter("password");
-                //.permitAll();  // даем доступ к форме логина всем
                 //.and().csrf().configure(http); // todo
 
         http.logout()
@@ -73,9 +71,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
-                .logoutSuccessUrl("/?logout");
+                .logoutSuccessUrl("/?logout"); // указываем URL при удачном логауте
                 //.logoutRequestMatcher(new AntPathRequestMatcher("/logout")) // указываем URL логаута
-                //.logoutSuccessUrl("/?logout") // указываем URL при удачном логауте
                 //.invalidateHttpSession(true); // сделать невалидной текущую сессию
                 //.and().csrf().disable(); //выклчаем кроссдоменную секьюрность (на этапе обучения неважна)
     }

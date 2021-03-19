@@ -48,16 +48,6 @@ public class AppServiceImpl implements AppService {
     @Transactional(readOnly = true)
     public User loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findUser(email);
-
-        // TODO обработать как то
-//        Caused by: javax.persistence.NoResultException: No entity found for query
-//        at org.hibernate.query.internal.AbstractProducedQuery.getSingleResult(AbstractProducedQuery.java:1643)
-//        at org.hibernate.query.criteria.internal.compile.CriteriaQueryTypeQueryAdapter.getSingleResult(CriteriaQueryTypeQueryAdapter.java:111)
-//        at web.repository.UserRepositoryImpl.findUser(UserRepositoryImpl.java:51)
-//        at web.service.AppServiceImpl.loadUserByUsername(AppServiceImpl.java:46)
-//        at web.service.AppServiceImpl.loadUserByUsername(AppServiceImpl.java:16)
-
-
         if (null == user) {
             System.out.printf("User email %s not found", email);
             throw new UsernameNotFoundException(String.format("User email %s not found", email));

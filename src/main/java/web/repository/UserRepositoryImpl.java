@@ -1,8 +1,5 @@
 package web.repository;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import web.model.User;
 
@@ -39,7 +36,6 @@ public class UserRepositoryImpl implements UserRepository {
         CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
         Root<User> itemRoot = criteriaQuery.from(User.class);
         criteriaQuery.where(criteriaBuilder.equal(itemRoot.get("email"), email));
-        //Hibernate.initialize(user.getRoles()); // TODO
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
 
@@ -51,7 +47,6 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public void updateUser(User user) {
         entityManager.merge(user);
-//        entityManager.flush();
     }
 
     @Override
