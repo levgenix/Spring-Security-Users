@@ -24,8 +24,11 @@ public class AdminController {
 
     @GetMapping("")
     public String showUserList(Model model) {
+//        for(User u : appService.findAllUsers()) {
+//            System.out.println(u);
+//        }
         model.addAttribute("users", appService.findAllUsers());
-        appService.loadUserByUsername("123");
+
         return "user-list";
     }
 
@@ -50,12 +53,13 @@ public class AdminController {
     }
 
     @PostMapping()
-    public String createOrUpdateUser(@Valid @ModelAttribute("user") User user, BindingResult bindingResult,
-                                     Model model) {
+    public String createOrUpdateUser(@Valid @ModelAttribute("user") User user,
+                                     BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("allRoles", appService.findAllRoles());
             return "user-form";
         }
+
         try {
             appService.createOrUpdateUser(user);
         } catch (PersistenceException e) {
@@ -77,18 +81,6 @@ public class AdminController {
     }
 
     /*
-    @PutMapping
-    public String addNewUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
-
-        return "redirect:/admin";
-    }
-
-    @PatchMapping
-    public String updateUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
-
-        return "redirect:/admin";
-    }
-
     @DeleteMapping
     public String deleteUser(@RequestParam(value = "id", required = true, defaultValue = "") long id) {
         return "redirect:/admin";

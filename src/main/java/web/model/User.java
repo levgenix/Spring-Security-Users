@@ -34,12 +34,11 @@ public class User implements UserDetails {
 
     private boolean enabled;
 
-    //@Transient //TODO
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    private Set<Role> roles;
+    private Set<Role> roles = new HashSet<>();
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_on")
+    @Column(name = "created_on") // todo
     private Date createdOn;
 
     public User() {
@@ -102,6 +101,14 @@ public class User implements UserDetails {
             return false;
         }
         Optional<Role> findRole = roles.stream().filter(role -> roleId == role.getId()).findFirst();
+        return findRole.isPresent();
+    }
+
+    public boolean hasRole(String roleName) {
+        if (null == roles|| 0 == roles.size()) {
+            return false;
+        }
+        Optional<Role> findRole = roles.stream().filter(role -> roleName.equals(role.getName())).findFirst();
         return findRole.isPresent();
     }
 

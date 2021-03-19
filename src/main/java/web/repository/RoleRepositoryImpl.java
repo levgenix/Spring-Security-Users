@@ -6,6 +6,8 @@ import web.model.Role;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Repository
 public class RoleRepositoryImpl implements RoleRepository {
@@ -13,18 +15,17 @@ public class RoleRepositoryImpl implements RoleRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-//    private final SessionFactory sessionFactory;
-//
-//    @Autowired
-//    public RoleRepositoryImpl(SessionFactory sessionFactory) {
-//        this.sessionFactory = sessionFactory;
-//    }
-
+    // todo cache
     @Override
     public List<Role> findAll() {
-//        TypedQuery<Role> query = sessionFactory.openSession().createQuery("from Role", Role.class);
-//        return query.getResultList();
         return entityManager.createQuery("from Role", Role.class).getResultList();
+    }
+
+    public Role findRoleByAuthority(String authority) throws NoSuchElementException {
+        return findAll().stream()
+                .filter(r -> authority.equals(r.getAuthority()))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(String.format("Role %s not found", authority)));
     }
 
 //    @Override

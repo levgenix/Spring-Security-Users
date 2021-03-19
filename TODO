@@ -1,12 +1,14 @@
 TODO
 ApplicationInitializer.onStartup - проверка на кириллицу в форме
 + Reformat naming all methods
-unique users
+unique users ConstraintException
 + Make RoleRepository
 Autoload test data
 code style
 Перехват исключений при авторизации. enabled. #{errors}?
 Переход по несекьюрным линкам
-EnableAspectJAutoProxy
+- EnableAspectJAutoProxy
 Validate form
 BCrypro password
+User.enable add to form
+При ошибочном логине, писать в сессию значния и вставлять в форму

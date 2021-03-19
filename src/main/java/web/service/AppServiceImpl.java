@@ -12,12 +12,13 @@ import web.repository.UserRepository;
 import javax.persistence.PersistenceException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @Transactional
 public class AppServiceImpl implements AppService {
-    private final UserRepository userRepository;
 
+    private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
     @Autowired
@@ -27,11 +28,13 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> findAllUsers() {
         return userRepository.findAllUsers();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findUser(long userId) throws NullPointerException {
         User user = userRepository.findUser(userId);
         if (null == user) {
@@ -42,6 +45,7 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findUser(email);
 
@@ -63,6 +67,15 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public void createOrUpdateUser(User user) throws PersistenceException {
+        System.out.println(user);
+        for (Role role : user.getRoles()) {
+            try {
+                role.setId(roleRepository.findRoleByAuthority(role.getAuthority()).getId());
+            } catch (NoSuchElementException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(user);
         if (0 == user.getId()) {
             createUser(user);
         } else {
@@ -94,6 +107,7 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Role> findAllRoles() {
         return roleRepository.findAll();
     }
