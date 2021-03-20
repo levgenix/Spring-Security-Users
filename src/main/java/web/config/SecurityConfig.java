@@ -1,15 +1,14 @@
 package web.config;
 
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import web.config.handler.CustomUrlLogoutSuccessHandler;
 import web.config.handler.CustomAuthenticationFailureHandler;
 import web.config.handler.CustomAuthenticationSuccessHandler;
+import web.config.handler.CustomUrlLogoutSuccessHandler;
 import web.service.AppService;
 
 @EnableWebSecurity(debug = true)
@@ -26,30 +25,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // класс, в котором описана логика при удачной авторизации
     private final CustomUrlLogoutSuccessHandler urlLogoutSuccessHandler;
 
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
     public SecurityConfig(AppService appService,
                           CustomAuthenticationSuccessHandler authenticationSuccessHandler,
                           CustomAuthenticationFailureHandler authenticationFailureHandler,
-                          CustomUrlLogoutSuccessHandler urlLogoutSuccessHandler) {
+                          CustomUrlLogoutSuccessHandler urlLogoutSuccessHandler,
+                          PasswordEncoder passwordEncoder) {
         this.appService = appService;
         this.authenticationSuccessHandler = authenticationSuccessHandler;
         this.authenticationFailureHandler = authenticationFailureHandler;
         this.urlLogoutSuccessHandler = urlLogoutSuccessHandler;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(appService).passwordEncoder(passwordEncoder()); // конфигурация для прохождения аутентификации
+        // конфигурация для прохождения аутентификации
+        auth.userDetailsService(appService).passwordEncoder(passwordEncoder);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable() //выклчаем кроссдоменную секьюрность
+                .csrf().disable() //выключаем кроссдоменную секьюрность
                 .authorizeRequests() // делаем страницу регистрации недоступной для авторизированных пользователей
                 .antMatchers("/", "/css/*", "/js/*").permitAll()
-                .antMatchers("/admin/**  ").hasRole("ADMIN") // TODO проверить
+                .antMatchers("/admin/**  ")/*.access("hasRole('ADMIN')")//*/.hasRole("ADMIN") // TODO проверить
                 .antMatchers("/user/**  ").hasAnyRole("ADMIN", "USER")
-                .anyRequest().authenticated(); // защищенные URL
+                .anyRequest()
+                .authenticated();
 
         http.formLogin()
                 .loginPage("/") // указываем страницу с формой логина
@@ -68,15 +74,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/?logout") // указываем URL при удачном логауте
                 .logoutSuccessHandler(urlLogoutSuccessHandler);
     }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
-    }
-
-    // TODO
-/*    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }*/
 }

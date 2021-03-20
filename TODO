@@ -8,7 +8,7 @@ code style
 Переход по несекьюрным линкам
 - EnableAspectJAutoProxy
 + Validate form
-BCrypro password
++ BCrypro password
 + User.enable add to form
 + При ошибочном логине, писать в сессию значения и вставлять в форму. Перехват исключений при авторизации.
 + User.nabled. #{errors}?

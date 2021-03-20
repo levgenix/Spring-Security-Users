@@ -3,23 +3,20 @@ package web.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import web.model.LoginException;
 
 import javax.servlet.http.HttpSession;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/")
 public class IndexController {
 
 	@GetMapping("")
-	public String welcomePage(Model model,
+	public String welcomePage(Model model, HttpSession session,
 							  @SessionAttribute(required = false, name = "Authentication-Exception") LoginException authenticationException,
-							  @SessionAttribute(required = false, name = "Authentication-Name") String authenticationName,
-							  @RequestHeader Map<String, String> headers, HttpSession session) {
+							  @SessionAttribute(required = false, name = "Authentication-Name") String authenticationName) {
 		// Восстанавливаем неверно введенные данные
 		if (authenticationException != null) {
 			try {
