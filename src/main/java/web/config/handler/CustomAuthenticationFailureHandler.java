@@ -3,6 +3,7 @@ package web.config.handler;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
+import web.model.LoginException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +22,16 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
                                         HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
         if (isAllowSessionCreation()) {
-            request.getSession().setAttribute("Authentication-Exception", exception.getMessage());
+            LoginException loginException = new LoginException(exception.getMessage());
+            request.getParameterMap().entrySet().forEach((entry) -> {
+                if (entry.getKey().equals("email")) {
+                    loginException.setEmail(entry.getValue()[0]);
+                } else if (entry.getKey().equals("password")) {
+                    loginException.setPassword(entry.getValue()[0]);
+                }
+            });
+
+            request.getSession().setAttribute("Authentication-Exception", loginException);
         }
 
         super.onAuthenticationFailure(request, response, exception);

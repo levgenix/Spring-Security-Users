@@ -8,29 +8,19 @@ import javax.persistence.*;
 // Имя роли должно соответствовать шаблону: «ROLE_ИМЯ», например, ROLE_USER.
 @Entity
 @Table(name = "roles")
-public class Role implements GrantedAuthority {
-    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) int id;
-
+public class Role extends AbstractEntity implements GrantedAuthority {
     @Column(unique = true)
     private String name;
 
     public Role() {
     }
 
-    public Role(int roleId) {
+    /*public Role(Long roleId) {
         id = roleId;
-    }
+    }*/
 
     public Role(String name) {
         this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {

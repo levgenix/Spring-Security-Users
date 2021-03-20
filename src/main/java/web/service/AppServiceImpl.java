@@ -1,6 +1,7 @@
 package web.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,13 +10,10 @@ import web.model.User;
 import web.repository.RoleRepository;
 import web.repository.UserRepository;
 
-import javax.persistence.PersistenceException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
-@Transactional
 public class AppServiceImpl implements AppService {
 
     private final UserRepository userRepository;
@@ -28,36 +26,28 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<User> findAllUsers() {
-        return userRepository.findAllUsers();
+        return userRepository.findAll();
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public User findUser(long userId) throws NullPointerException {
-        User user = userRepository.findUser(userId);
-        if (null == user) {
-            System.out.printf("User with id = %d not found", userId);
-            throw new NullPointerException(String.format("User with id = %d not found", userId));
-        }
-        return user;
+    public User findUser(Long id) {
+        return userRepository.find(id)
+                .orElseThrow(() -> new EmptyResultDataAccessException(String.format("User with ID = %d not found", id), 1));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public User loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findUser(email);
+        User user = userRepository.find(email);
         if (null == user) {
-            System.out.printf("User email %s not found", email);
             throw new UsernameNotFoundException(String.format("User email %s not found", email));
         }
         return user;
     }
 
     @Override
-    public void createOrUpdateUser(User user) throws PersistenceException {
-        System.out.println(user);
+    @Transactional
+    public void saveOrUpdateUser(User user) {
         for (Role role : user.getRoles()) {
             try {
                 role.setId(roleRepository.findRoleByAuthority(role.getAuthority()).getId());
@@ -65,81 +55,26 @@ public class AppServiceImpl implements AppService {
                 e.printStackTrace();
             }
         }
-        System.out.println(user);
-        if (0 == user.getId()) {
-            createUser(user);
-        } else {
-            updateUser(user);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long userId) {
+        try {
+            userRepository.deleteById(userId);
+        } catch (EmptyResultDataAccessException e) {
+            e.printStackTrace();
         }
     }
 
-    private void createUser(User user)/* throws PersistenceException*/ {
-        // TODO
-        // Request processing failed; nested exception is javax.persistence.PersistenceException: org.hibernate.exception.ConstraintViolationException: could not execute statement
-
-        // Root cause
-        // java.sql.SQLIntegrityConstraintViolationException: Duplicate entry '1@1' for key 'users.UK_6dotkott2kjsp8vw4d0m25fb7'
-        // ...
-        // 	web.repository.UserRepositoryImpl.createUser(UserRepositoryImpl.java:55)
-        //	web.service.UserServiceimpl.createUser(UserServiceimpl.java:63)
-        //	web.service.UserServiceimpl.createOrUpdateUser(UserServiceimpl.java:56)
-
-        userRepository.createUser(user);
-    }
-
-    private void updateUser(User user) {
-        userRepository.updateUser(user);
-    }
-
     @Override
-    public void deleteUser(long userId) {
-        userRepository.deleteUser(userId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Role> findAllRoles() {
         return roleRepository.findAll();
     }
 
-
-    // TODO
-    //@PostConstruct
+    //@PostConstruct TODO
     private void populateUsers() {
 
-//        List<Role> roles = new ArrayList<>();
-//        roles.add(new Role("ROLE_ADMIN"));
-//        roles.add(new Role("ROLE_USER"));
-//        userRepository.createRoles(roles);
-//
-//        for (Role role : roles) {
-//            System.out.println(role);
-//        }
-
-//        for (Role role : userRepository.getAllRoles()) {
-//            System.out.println(role);
-//        }
-
-        User admin = new User("Ivan", "Ivanov", "admin@mail.ru", "admin12");
-        admin.setRoles(new HashSet<Role>(){{
-            add(new Role("ROLE_ADMIN"));
-            add(new Role("ROLE_USER"));
-        }});
-        userRepository.createUser(admin);
-
-        User user = new User("Vasya", "Petrov", "user@mail.ru", "user12");
-        user.setRoles(new HashSet<Role>(){{
-            add(new Role("ROLE_USER"));
-        }});
-        userRepository.createUser(user);
-
-        //Set<Role> user_roles = new HashSet<>({userRepository.getAllRoles()});
-//        user.setRoles(new Set<Role>() {
-//        });
-//
-//        Set<Role> roles = new HashSet<>();
-//        roles.add(new Role("ROLE_USER"));
-////        roles.add(new Role(2, "ROLE_ADMIN"));
-//        user.setRoles(roles);
     }
 }

@@ -1,7 +1,7 @@
 TODO
-ApplicationInitializer.onStartup - проверка на кириллицу в форме
++ ApplicationInitializer.onStartup - проверка на кириллицу в форме
 + Reformat naming all methods
-unique users ConstraintException
++ unique users ConstraintException
 + Make RoleRepository
 Autoload test data
 code style
@@ -10,4 +10,6 @@ code style
 + Validate form
 BCrypro password
 + User.enable add to form
-При ошибочном логине, писать в сессию значния и вставлять в форму. Перехват исключений при авторизации. enabled. #{errors}?
++ При ошибочном логине, писать в сессию значения и вставлять в форму. Перехват исключений при авторизации.
++ User.nabled. #{errors}?
+

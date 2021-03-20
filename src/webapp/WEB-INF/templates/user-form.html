@@ -56,14 +56,22 @@
                 <div id="enabled-row">
                     <div class="form-check form-check-inline">
                         <input type="checkbox" class="form-check-input" name="roles" th:checked="*{isEnabled()}" id="enabled" th:field="*{enabled}">
-                        <label class="form-check-label" for="enabled">Enabled</label>
+                        <label class="form-check-label" for="enabled">Is enabled</label>
                     </div>
                 </div>
             </div>
         </div>
-
-        <button class="btn btn-secondary" type="submit" th:text="*{getId()} ? 'Save' : 'Create'"/>
-        <a class="btn btn-light border-dark" href="/admin">Cancel</a>
+        <div class="d-flex justify-content-start align-items-center form-row">
+            <div class="mr-3">
+                <button class="btn btn-secondary" type="submit" th:text="*{getId()} ? 'Save' : 'Create'"/>
+                <a class="btn btn-light border-dark" href="/admin">Cancel</a>
+            </div>
+            <div>
+                <div th:if="${persistenceException}" class="alert alert-danger mb-0" role="alert">
+                    User with email <span th:text="*{getEmail()}"/> is exists!
+                </div>
+            </div>
+        </div>
     </form>
 </div>
 

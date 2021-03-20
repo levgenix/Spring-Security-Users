@@ -8,12 +8,12 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
+import java.util.Objects;
 
 @Configuration
 @PropertySource("classpath:hibernate.properties")
@@ -45,15 +45,15 @@ public class AppConfig {
         em.setDataSource(dataSource());
         em.setPackagesToScan("web.model");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        em.setPersistenceUnitName("emFactory");
 
         return em;
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(emf);
+    public TransactionManager transactionManager() {
+        JpaTransactionManager transactionManager =
+                new JpaTransactionManager(Objects.requireNonNull(entityManagerFactory().getObject()));
+        transactionManager.setDataSource(dataSource());
 
         return transactionManager;
     }

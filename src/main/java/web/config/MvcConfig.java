@@ -61,10 +61,4 @@ public class MvcConfig implements WebMvcConfigurer {
         templateResolver.setCacheable(false);
         return templateResolver;
     }
-
-
-
-
-
-
 }

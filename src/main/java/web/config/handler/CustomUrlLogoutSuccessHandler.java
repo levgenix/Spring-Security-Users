@@ -13,7 +13,6 @@ import java.io.IOException;
 public class CustomUrlLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        System.out.println("onLogoutSuccess");
         super.onLogoutSuccess(request, response, authentication);
     }
 }

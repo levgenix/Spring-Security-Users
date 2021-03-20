@@ -22,19 +22,17 @@
 </div>
 
 <div class="container">
-    <div class="row p-3 mb-2 bg-dark text-white">
-        <div class="col">Name</div>
-        <div class="col">Last name</div>
-        <div class="col text-center">E-mail</div>
+    <div class="row p-3 mb-2 bg-dark text-white font-weight-bold">
+        <div class="col">Full name</div>
+        <div class="col">E-mail</div>
         <div class="col text-center">Enabled</div>
         <div class="col text-center">Roles</div>
         <div class="col text-center">Actions</div>
     </div>
 
     <div th:each="user,rowStat : ${users}" class="d-flex align-items-center row p-2 mb-2" th:classappend="${rowStat.count % 2 != 0 ? 'bg-light text-dark' : 'bg-secondary text-white'}">
-        <div class="col font-weight-bold" th:text="${user.firstName}"/>
-        <div class="col" th:text="${user.lastName}"/>
-        <div class="col text-center" th:text="${user.email}"/>
+        <div class="col font-weight-bold" th:text="${user.getFullName()}"/>
+        <div class="col" th:text="${user.email}"/>
         <div class="col text-center" th:text="${user.enabled}"/>
         <div class="col text-center">
             <th:block th:each="role : ${user.roles}">

@@ -1,5 +1,6 @@
 package web.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import web.model.User;
 
@@ -9,6 +10,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
@@ -17,21 +19,7 @@ public class UserRepositoryImpl implements UserRepository {
     private EntityManager entityManager;
 
     @Override
-    public List<User> findAllUsers() {
-        return entityManager.createQuery("from User", User.class).getResultList();
-    }
-
-    @Override
-    public User findUser(long userId) {
-        return entityManager.find(User.class, userId);
-    }
-
-    @Override
-    public User findUser(String email) {
-        /*TypedQuery<User> query = sessionFactory.openSession().createQuery("from User where email = :email", User.class);
-        query.setParameter("email", email);
-        return query.getSingleResult();*/
-
+    public User find(String email) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
         Root<User> itemRoot = criteriaQuery.from(User.class);
@@ -40,25 +28,34 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void createUser(User user) {
-        entityManager.persist(user);
+    public List<User> findAll() {
+        return entityManager.createQuery("from User", User.class).getResultList();
     }
 
     @Override
-    public void updateUser(User user) {
-        entityManager.merge(user);
+    public Optional<User> find(Long id) {
+        return Optional.ofNullable(entityManager.find(User.class, id));
     }
 
     @Override
-    public void deleteUser(long userId) {
-        entityManager.remove(findUser(userId));
+    public void save(User entity) {
+        if (!entity.persisted()) {
+            entityManager.persist(entity);
+        } else {
+            entityManager.merge(entity);
+        }
+        entityManager.flush();
     }
 
-//    public void populateUsers(List<User> users) {
-//        sessionFactory.openSession().createQuery("TRUNCATE TABLE ");
-//        sessionFactory.getCurrentSession().get(Role.class, 1);
-//
-//        Query query = sessionFactory.getCurrentSession().createQuery("delete from User where id = :userId");
-//        query.setParameter("userId", 1).executeUpdate();
-//    }
+    @Override
+    public void deleteById(Long id) {
+        User entity = find(id).orElseThrow(() -> new EmptyResultDataAccessException(
+                String.format("No user with id %s exists!", id), 1));
+        delete(entity);
+        entityManager.flush();
+    }
+
+    private void delete(User entity) {
+        entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
+    }
 }

@@ -10,7 +10,7 @@
     <div class="row d-flex justify-content-center">
         <div class="col-auto">
             <div class="jumbotron">
-                <p class="lead">User info page</p>
+                <p class="display-4">User info page</p>
                 <hr class="my-4">
                 <p><b>Hello, </b><span th:text="*{getFullName()}"/></p>
                 <p><b>Your email </b><span th:text="*{email}"/></p>
@@ -20,6 +20,7 @@
                         &nbsp;<span th:text="${role.name}"/>
                     </th:block>
                 </p>
+                <p><b>Is enabled: </b><span th:text="*{enabled}"/></p>
                 <p><a type="button" th:href="@{/logout}" class="btn btn-secondary bg-secondary text-white">Logout</a></p>
             </div>
         </div>

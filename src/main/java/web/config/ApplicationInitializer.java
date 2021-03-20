@@ -39,15 +39,6 @@ public class ApplicationInitializer extends AbstractAnnotationConfigDispatcherSe
         filterRegistration = servletContext.addFilter("hiddenHttpMethodFilter", new HiddenHttpMethodFilter() );
         filterRegistration.addMappingForUrlPatterns(null, false, "/*");
 
-        //TODO
         servletContext.addListener(AppContextListener.class);
     }
-
-//    import org.springframework.web.filter.CharacterEncodingFilter;
-//    protected Filter[] getServletFilters() {
-//        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-//        characterEncodingFilter.setEncoding("UTF-8");
-//        characterEncodingFilter.setForceEncoding(true);
-//        return new Filter[] {characterEncodingFilter};
-//    }
 }

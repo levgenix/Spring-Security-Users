@@ -14,21 +14,26 @@
                 <p class="lead">CRUD App using Spring MVC, Hibernate, Spring Security, Thymeleaf</p>
                 <hr class="my-4">
                 <th:block sec:authorize="isAuthenticated()">
-                    <p>You Authenticated as <span sec:authentication="name"/></p>
+                    <p>You authenticated as <span sec:authentication="name"/></p>
                     <p><a type="button" th:href="@{/logout}" class="btn btn-secondary bg-secondary text-white">Logout</a></p>
                 </th:block>
                 <th:block sec:authorize="!isAuthenticated()">
                     <p>Sign in for access</p>
-                    <form th:method="POST" th:action="@{/}" th:object="${user}">
+                    <form th:method="POST" th:action="@{/}">
                         <div class="form-row">
-                            <div class="col-md-6 mb-3">
-                                <input type="text" class="form-control" name="email" th:value="*{email}" placeholder="Email (login)" autofocus="autofocus" required>
+                            <div class="col-6 mb-3">
+                                <input type="text" class="form-control" name="email" th:value="${authenticationException.getEmail()}" placeholder="Email (login)" autofocus="autofocus" required>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <input type="password" class="form-control" name="password" th:value="*{password}" placeholder="Password" required>
+                            <div class="col-6 mb-3">
+                                <input type="password" class="form-control" name="password" th:value="${authenticationException.getPassword()}" placeholder="Password" required>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-secondary">Sign in</button>
+                        <div class="d-flex justify-content-start align-items-center form-row">
+                            <div class="mr-3">
+                                <button type="submit" class="btn btn-secondary">Sign in</button>
+                            </div>
+                            <div th:if="${authenticationException.getMessage()}" class="alert alert-danger mb-0" role="alert" th:text="${authenticationException.getMessage()}"/>
+                        </div>
                     </form>
                 </th:block>
             </div>

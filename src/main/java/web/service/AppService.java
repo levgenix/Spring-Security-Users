@@ -9,11 +9,11 @@ import java.util.List;
 public interface AppService extends UserDetailsService {
     List<User> findAllUsers();
 
-    User findUser(long userId) throws NullPointerException;
+    User findUser(Long userId) throws NullPointerException;
 
-    void createOrUpdateUser(User user);
+    void saveOrUpdateUser(User user);
 
-    void deleteUser(long userId);
+    void deleteUser(Long userId);
 
     List<Role> findAllRoles();
 }

@@ -12,9 +12,7 @@ import java.util.*;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
-
-    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) long id;
+public class User extends AbstractEntity implements UserDetails {
 
     @Column(name = "name")
     @NotEmpty(message = "Name should not be empty")
@@ -34,26 +32,11 @@ public class User implements UserDetails {
 
     private boolean enabled;
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
 
     public User() {
 
-    }
-
-    public User(String firstName, String lastName, String email, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getFirstName() {
@@ -72,6 +55,10 @@ public class User implements UserDetails {
         this.lastName = lastName;
     }
 
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -86,10 +73,6 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getFullName() {
-        return getFirstName() + " " + getLastName();
     }
 
     public boolean hasRole(int roleId) {

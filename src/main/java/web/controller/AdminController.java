@@ -1,6 +1,7 @@
 package web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,9 +25,6 @@ public class AdminController {
 
     @GetMapping("")
     public String showUserList(Model model) {
-//        for(User u : appService.findAllUsers()) {
-//            System.out.println(u);
-//        }
         model.addAttribute("users", appService.findAllUsers());
 
         return "user-list";
@@ -40,11 +38,12 @@ public class AdminController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editUserForm(@PathVariable(value = "id", required = true) long userId, Model model) {
+    public String editUserForm(@PathVariable(value = "id", required = true) Long userId, Model model) {
         try {
             model.addAttribute("user", appService.findUser(userId));
-        } catch (NullPointerException e) {
+        } catch (EmptyResultDataAccessException e) {
             e.printStackTrace();
+
             return "redirect:/admin";
         }
         model.addAttribute("allRoles", appService.findAllRoles());
@@ -53,20 +52,20 @@ public class AdminController {
     }
 
     @PostMapping()
-    public String createOrUpdateUser(@Valid @ModelAttribute("user") User user,
+    public String saveOrUpdateUser(@Valid @ModelAttribute("user") User user,
                                      BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("allRoles", appService.findAllRoles());
+
             return "user-form";
         }
 
         try {
-            appService.createOrUpdateUser(user);
+            appService.saveOrUpdateUser(user);
         } catch (PersistenceException e) {
-            // TODO: set error
-            model.addAttribute("PersistenceError", String.format("User with email %s exists", user.getEmail()));
+            model.addAttribute("persistenceException", true);
             model.addAttribute("allRoles", appService.findAllRoles());
-            e.printStackTrace();
+
             return "user-form";
         }
 
@@ -74,15 +73,9 @@ public class AdminController {
     }
 
     @GetMapping("/{id}/delete")
-    public String deleteUser(@PathVariable("id") long userId) {
+    public String deleteUser(@PathVariable("id") Long userId) {
         appService.deleteUser(userId);
 
         return "redirect:/admin";
     }
-
-    /*
-    @DeleteMapping
-    public String deleteUser(@RequestParam(value = "id", required = true, defaultValue = "") long id) {
-        return "redirect:/admin";
-    }*/
 }

@@ -3,17 +3,16 @@ package web.repository;
 import web.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository {
-    List<User> findAllUsers();
+    List<User> findAll();
 
-    User findUser(long userId);
+    Optional<User> find(Long id);
 
-    User findUser(String email);
+    User find(String email);
 
-    void createUser(User user);
+    void save(User entity);
 
-    void updateUser(User user);
-
-    void deleteUser(long userId);
+    void deleteById(Long id);
 }
