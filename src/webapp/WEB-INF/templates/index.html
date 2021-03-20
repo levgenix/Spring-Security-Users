@@ -12,10 +12,16 @@
             <div class="jumbotron">
                 <h1 class="display-4">CRUD App</h1>
                 <p class="lead">CRUD App using Spring MVC, Hibernate, Spring Security, Thymeleaf</p>
-                <hr class="my-4">
+                <hr class="my-4"/>
                 <th:block sec:authorize="isAuthenticated()">
-                    <p>You authenticated as <span sec:authentication="name"/></p>
+                    <p class="font-weight-bold">You authenticated as <span sec:authentication="name"/></p>
+                    <hr class="my-4"/>
                     <p><a type="button" th:href="@{/logout}" class="btn btn-secondary bg-secondary text-white">Logout</a></p>
+                </th:block>
+
+                <th:block th:if="${authenticationName}">
+                    <p class="font-weight-bold" th:text="|Good bye, ${authenticationName}!|"/>
+                    <hr class="my-4"/>
                 </th:block>
                 <th:block sec:authorize="!isAuthenticated()">
                     <p>Sign in for access</p>

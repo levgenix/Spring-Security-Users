@@ -18,9 +18,9 @@ public class IndexController {
 	@GetMapping("")
 	public String welcomePage(Model model,
 							  @SessionAttribute(required = false, name = "Authentication-Exception") LoginException authenticationException,
+							  @SessionAttribute(required = false, name = "Authentication-Name") String authenticationName,
 							  @RequestHeader Map<String, String> headers, HttpSession session) {
-		// TODO: при ?logout выводить прощальное сообщение
-
+		// Восстанавливаем неверно введенные данные
 		if (authenticationException != null) {
 			try {
 				model.addAttribute("authenticationException", authenticationException);
@@ -30,6 +30,16 @@ public class IndexController {
 			}
 		} else {
 			model.addAttribute("authenticationException", new LoginException(null));
+		}
+
+		// Выводим прощальное сообщение
+		if (authenticationName != null) {
+			try {
+				model.addAttribute("authenticationName", authenticationName);
+				session.removeAttribute("Authentication-Name");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		return "index";

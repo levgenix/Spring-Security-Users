@@ -21,6 +21,8 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
     public void onAuthenticationFailure(HttpServletRequest request,
                                         HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
+
+        // Запишем, чтобы не вводить заново ошибочные данные формы
         if (isAllowSessionCreation()) {
             LoginException loginException = new LoginException(exception.getMessage());
             request.getParameterMap().entrySet().forEach((entry) -> {

@@ -20,8 +20,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // класс, в котором описана логика перенаправления пользователей по ролям
     private final CustomAuthenticationSuccessHandler authenticationSuccessHandler;
 
+    // класс, в котором описана логика при неудачной авторизации
     private final CustomAuthenticationFailureHandler authenticationFailureHandler;
 
+    // класс, в котором описана логика при удачной авторизации
     private final CustomUrlLogoutSuccessHandler urlLogoutSuccessHandler;
 
     public SecurityConfig(AppService appService,
@@ -42,39 +44,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+                .csrf().disable() //выклчаем кроссдоменную секьюрность
                 .authorizeRequests() // делаем страницу регистрации недоступной для авторизированных пользователей
                 .antMatchers("/", "/css/*", "/js/*").permitAll()
-                //.antMatchers("/login").anonymous() //страницы аутентификаци доступна всем
                 .antMatchers("/admin/**  ").hasRole("ADMIN") // TODO проверить
                 .antMatchers("/user/**  ").hasAnyRole("ADMIN", "USER")
                 .anyRequest().authenticated(); // защищенные URL
-                //.antMatchers("/hello").access("hasAnyRole('ADMIN')").anyRequest().authenticated(); // защищенные URL
-                //.and()
-                // 403 error https://www.codeflow.site/ru/article/spring-security-custom-access-denied-page
-                //.exceptionHandling().accessDeniedPage("/accessdenied"); // todo
 
         http.formLogin()
                 .loginPage("/") // указываем страницу с формой логина
                 .permitAll()  // даем доступ к форме логина всем
                 .successHandler(authenticationSuccessHandler) //указываем логику обработки при удачном логине
-                .failureHandler(authenticationFailureHandler)
+                .failureHandler(authenticationFailureHandler) //указываем логику обработки при неудачном логине
                 .usernameParameter("email") // Указываем параметры логина и пароля с формы логина
                 .passwordParameter("password");
-                //.and().csrf().configure(http); // todo
 
         http.logout()
-                //.permitAll() // разрешаем делать логаут всем
+                .permitAll() // разрешаем делать логаут всем
                 .logoutUrl("/logout")
-                .logoutSuccessHandler(urlLogoutSuccessHandler) // todo
-                //.logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET")) // https://docs.spring.io/spring-security/site/docs/4.2.12.RELEASE/apidocs/org/springframework/security/config/annotation/web/configurers/LogoutConfigurer.html
                 .clearAuthentication(true)
-                .invalidateHttpSession(true)
+                .invalidateHttpSession(true) // сделать невалидной текущую сессию
                 .deleteCookies("JSESSIONID")
-                .logoutSuccessUrl("/?logout"); // указываем URL при удачном логауте
-                //.logoutRequestMatcher(new AntPathRequestMatcher("/logout")) // указываем URL логаута
-                //.invalidateHttpSession(true); // сделать невалидной текущую сессию
-                //.and().csrf().disable(); //выклчаем кроссдоменную секьюрность (на этапе обучения неважна)
+                .logoutSuccessUrl("/?logout") // указываем URL при удачном логауте
+                .logoutSuccessHandler(urlLogoutSuccessHandler);
     }
 
     @Bean
