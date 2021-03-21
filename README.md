@@ -1,5 +1,13 @@
 ## Java pre-project. Практическая задача 2.4.2
 
+### Initial login data is admin : admin
+
+<img src="https://raw.githubusercontent.com/levgenix/Spring-Security-Users/master/src/main/resources/static/img/login-form.png?sanitize=true&raw=true"/>
+<br/><br/>
+<img src="https://raw.githubusercontent.com/levgenix/Spring-Security-Users/master/src/main/resources/static/img/user-list.png?sanitize=true&raw=true"/>
+<br/><br/>
+<img src="https://raw.githubusercontent.com/levgenix/Spring-Security-Users/master/src/main/resources/static/img/user-form.png?sanitize=true&raw=true"/>
+
 ### Условие:
 Модуль Spring Security позволяет нам внедрять права доступа, а также контролировать их исполнение без ручных проверок.
 
@@ -30,10 +38,3 @@ GrantedAuthority - сущность, описывающая права юзер�
 5. Пользователь с ролью user должен иметь доступ только к своей домашней странице /user, где выводятся его данные. Доступ к этой странице должен быть только у пользователей с ролью userи admin. Не забывайте про несколько ролей у пользователя!
 6. Настройте logout с любой страницы с использованием возможностей thymeleaf.
 7. Настройте LoginSuccessHandler так, чтобы админа после логина направляло на страницу /admin, а юзера на его страницу.
-
-<br/>
-<img src="https://raw.githubusercontent.com/levgenix/Spring-Security-Users/master/src/main/resources/static/img/login-form.png?sanitize=true&raw=true"/>
-<br/><br/>
-<img src="https://raw.githubusercontent.com/levgenix/Spring-Security-Users/master/src/main/resources/static/img/user-list.png?sanitize=true&raw=true"/>
-<br/><br/>
-<img src="https://raw.githubusercontent.com/levgenix/Spring-Security-Users/master/src/main/resources/static/img/user-form.png?sanitize=true&raw=true"/>

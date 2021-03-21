@@ -15,10 +15,6 @@ public class Role extends AbstractEntity implements GrantedAuthority {
     public Role() {
     }
 
-    /*public Role(Long roleId) {
-        id = roleId;
-    }*/
-
     public Role(String name) {
         this.name = name;
     }

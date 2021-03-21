@@ -76,9 +76,4 @@ public class AppServiceImpl implements AppService {
     public List<Role> findAllRoles() {
         return roleRepository.findAll();
     }
-
-    //@PostConstruct TODO
-    private void populateUsers() {
-
-    }
 }

@@ -13,6 +13,7 @@
                 <h1 class="display-4">CRUD App</h1>
                 <p class="lead">CRUD App using Spring MVC, Hibernate, Spring Security, Thymeleaf</p>
                 <hr class="my-4"/>
+
                 <th:block sec:authorize="isAuthenticated()">
                     <p class="font-weight-bold">You authenticated as <span sec:authentication="name"/></p>
                     <hr class="my-4"/>
@@ -23,6 +24,10 @@
                     <p class="font-weight-bold" th:text="|Good bye, ${authenticationName}!|"/>
                     <hr class="my-4"/>
                 </th:block>
+
+                <p>In first time using <b>admin : admin</b></p>
+                <hr class="my-4"/>
+
                 <th:block sec:authorize="!isAuthenticated()">
                     <p>Sign in for access</p>
                     <form th:method="POST" th:action="@{/}">
