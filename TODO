@@ -4,12 +4,12 @@ TODO
 + unique users ConstraintException
 + Make RoleRepository
 Autoload test data
-code style
-Переход по несекьюрным линкам
++ code style
++ Переход по несекьюрным линкам
 - EnableAspectJAutoProxy
 + Validate form
 + BCrypro password
 + User.enable add to form
 + При ошибочном логине, писать в сессию значения и вставлять в форму. Перехват исключений при авторизации.
 + User.nabled. #{errors}?
-
++ README.md
