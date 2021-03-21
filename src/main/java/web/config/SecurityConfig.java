@@ -50,12 +50,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable() //выключаем кроссдоменную секьюрность
-                .authorizeRequests() // делаем страницу регистрации недоступной для авторизированных пользователей
-                .antMatchers("/", "/css/*", "/js/*").permitAll()
-                .antMatchers("/admin/**  ")/*.access("hasRole('ADMIN')")//*/.hasRole("ADMIN") // TODO проверить
-                .antMatchers("/user/**  ").hasAnyRole("ADMIN", "USER")
-                .anyRequest()
-                .authenticated();
+                .authorizeRequests(authorize -> authorize
+                        .antMatchers("/", "/css/*", "/js/*").permitAll()
+                        .antMatchers("/admin/**").hasRole("ADMIN") // TODO проверить
+                        .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+                        .anyRequest().authenticated()
+                );
 
         http.formLogin()
                 .loginPage("/") // указываем страницу с формой логина
