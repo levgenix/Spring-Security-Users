@@ -3,7 +3,7 @@ package web.config.handler;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
-import web.model.LoginException;
+import web.controller.exception.LoginException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

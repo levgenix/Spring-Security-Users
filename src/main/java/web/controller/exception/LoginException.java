@@ -1,4 +1,4 @@
-package web.model;
+package web.controller.exception;
 
 import java.io.Serializable;
 
