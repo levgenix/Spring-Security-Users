@@ -5,7 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
-import web.controller.exception.LoginException;
+import web.config.exception.LoginException;
 
 import javax.servlet.http.HttpSession;
 

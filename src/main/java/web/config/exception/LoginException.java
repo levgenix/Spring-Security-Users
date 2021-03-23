@@ -1,4 +1,4 @@
-package web.controller.exception;
+package web.config.exception;
 
 import java.io.Serializable;
 

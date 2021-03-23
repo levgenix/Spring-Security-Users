@@ -29,7 +29,12 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findAll() {
-        return entityManager.createQuery("from User", User.class).getResultList();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+        Root<User> itemRoot = criteriaQuery.from(User.class);
+        criteriaQuery.orderBy(criteriaBuilder.asc(itemRoot.get("firstName")),
+                criteriaBuilder.asc(itemRoot.get("lastName")));
+        return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
     @Override

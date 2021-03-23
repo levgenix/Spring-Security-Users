@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 import java.util.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", indexes = {@Index(columnList = "name, last_name ASC")})
 public class User extends AbstractEntity implements UserDetails {
 
     @Column(name = "name")
@@ -33,9 +33,7 @@ public class User extends AbstractEntity implements UserDetails {
     private boolean enabled;
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name = "users_roles")
     private Set<Role> roles = new HashSet<>();
 
     public User() {
