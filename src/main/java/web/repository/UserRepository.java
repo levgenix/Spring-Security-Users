@@ -14,5 +14,5 @@ public interface UserRepository {
 
     void save(User entity);
 
-    void deleteById(Long id);
+    void delete(User entity);
 }

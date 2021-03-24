@@ -6,15 +6,22 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import web.config.exception.LoginException;
 import web.model.Role;
 import web.model.User;
 import web.repository.RoleRepository;
 import web.repository.UserRepository;
 
+import javax.persistence.PersistenceException;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
+@Transactional
 public class AppServiceImpl implements AppService {
 
     private final UserRepository userRepository;
@@ -34,9 +41,9 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
-    public User findUser(Long id) {
-        return userRepository.find(id)
-                .orElseThrow(() -> new EmptyResultDataAccessException(String.format("User with ID = %d not found", id), 1));
+    public User findUser(Long userId) {
+        return userRepository.find(userId)
+                .orElseThrow(() -> new EmptyResultDataAccessException(String.format("User with ID = %d not found", userId), 1));
     }
 
     @Override
@@ -49,8 +56,53 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
-    @Transactional
-    public void saveOrUpdateUser(User user) {
+    public void deleteUser(Long userId) {
+        Optional<User> user = userRepository.find(userId);
+        if (user.isPresent()) {
+            try {
+                userRepository.delete(user.get());
+            } catch (PersistenceException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public List<Role> findAllRoles() {
+        return roleRepository.findAll();
+    }
+
+    @Override
+    public void tryIndex(Model model, HttpSession session, LoginException authenticationException, String authenticationName) {
+        if (authenticationException != null) { // Восстанавливаем неверно введенные данные
+            try {
+                model.addAttribute("authenticationException", authenticationException);
+                session.removeAttribute("Authentication-Exception");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            model.addAttribute("authenticationException", new LoginException(null));
+        }
+
+        if (authenticationName != null) { // Выводим прощальное сообщение
+            try {
+                model.addAttribute("authenticationName", authenticationName);
+                session.removeAttribute("Authentication-Name");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public boolean saveUser(User user, BindingResult bindingResult, Model model) {
+        model.addAttribute("allRoles", findAllRoles());
+
+        if (bindingResult.hasErrors()) {
+            return false;
+        }
+
         for (Role role : user.getRoles()) {
             try {
                 role.setId(roleRepository.findRoleByAuthority(role.getAuthority()).getId());
@@ -59,21 +111,14 @@ public class AppServiceImpl implements AppService {
             }
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-    }
 
-    @Override
-    @Transactional
-    public void deleteUser(Long userId) {
         try {
-            userRepository.deleteById(userId);
-        } catch (EmptyResultDataAccessException e) {
-            e.printStackTrace();
+            userRepository.save(user);
+        } catch (PersistenceException e) { // org.hibernate.exception.ConstraintViolationException
+            model.addAttribute("persistenceException", true);
+            return false;
         }
-    }
 
-    @Override
-    public List<Role> findAllRoles() {
-        return roleRepository.findAll();
+        return true;
     }
 }

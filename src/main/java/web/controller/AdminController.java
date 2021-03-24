@@ -1,15 +1,16 @@
 package web.controller;
 
+import org.hibernate.AssertionFailure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import web.model.User;
 import web.service.AppService;
 
-import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 
 @Controller
@@ -54,22 +55,13 @@ public class AdminController {
     @PostMapping()
     public String saveOrUpdateUser(@Valid @ModelAttribute("user") User user,
                                      BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("allRoles", appService.findAllRoles());
-
-            return "user-form";
-        }
-
+        // Непонятно как избавиться от этого
+        // Поймать в сервисе транзакционный эксепшн нельзя
         try {
-            appService.saveOrUpdateUser(user);
-        } catch (PersistenceException e) {
-            model.addAttribute("persistenceException", true);
-            model.addAttribute("allRoles", appService.findAllRoles());
-
+            return appService.saveUser(user, bindingResult, model) ? "redirect:/admin" : "user-form";
+        } catch (AssertionFailure | UnexpectedRollbackException e) {
             return "user-form";
         }
-
-        return "redirect:/admin";
     }
 
     @GetMapping("/{id}/delete")

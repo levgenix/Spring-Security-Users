@@ -1,6 +1,5 @@
 package web.repository;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import web.model.User;
 
@@ -49,18 +48,10 @@ public class UserRepositoryImpl implements UserRepository {
         } else {
             entityManager.merge(entity);
         }
-        entityManager.flush();
     }
 
     @Override
-    public void deleteById(Long id) {
-        User entity = find(id).orElseThrow(() -> new EmptyResultDataAccessException(
-                String.format("No user with id %s exists!", id), 1));
-        delete(entity);
-        entityManager.flush();
-    }
-
-    private void delete(User entity) {
+    public void delete(User entity) {
         entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
     }
 }

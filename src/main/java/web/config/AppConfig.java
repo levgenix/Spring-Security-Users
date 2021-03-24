@@ -8,10 +8,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
 import java.util.Objects;
 
@@ -27,7 +25,7 @@ public class AppConfig {
     private String url;
 
     @Bean
-    public DataSource dataSource() {
+    public ComboPooledDataSource dataSource() {
         ComboPooledDataSource dataSource = new ComboPooledDataSource();
         try {
             dataSource.setDriverClass(driver);
@@ -50,7 +48,7 @@ public class AppConfig {
     }
 
     @Bean
-    public TransactionManager transactionManager() {
+    public JpaTransactionManager transactionManager() {
         JpaTransactionManager transactionManager =
                 new JpaTransactionManager(Objects.requireNonNull(entityManagerFactory().getObject()));
         transactionManager.setDataSource(dataSource());
